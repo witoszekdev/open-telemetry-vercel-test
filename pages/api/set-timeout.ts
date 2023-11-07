@@ -13,7 +13,7 @@ export default async function handler(
 ) {
   return await trace
     .getTracer("example-nextjs-app")
-    .startActiveSpan("set-timeout", async (span) => {
+    .startActiveSpan("set-timeout-route", async (span) => {
       const content = req.body;
       const requestId =
         (req.headers["x-vercel-proxy-signature-ts"] as string) ??
@@ -27,7 +27,7 @@ export default async function handler(
       const handle = setTimeout(async () => {
         await trace
           .getTracer("example-nextjs-app")
-          .startActiveSpan("timeout", async () => {
+          .startActiveSpan(`timeout:${requestId}`, async () => {
             const timeoutId = handle[Symbol.toPrimitive]();
             span.setAttribute("timeoutId", timeoutId);
             span.setAttribute("content", content);
