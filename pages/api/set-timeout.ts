@@ -12,6 +12,7 @@ export default async function handler(
     console.timeEnd("timer");
     fetch("http://google.com");
   }, 1000);
+  console.log("timer id", id);
   console.timeLog("timer");
-  res.status(200).json({ ok: true, timeoutId: id });
+  res.status(200).json({ ok: true });
 }
