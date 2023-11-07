@@ -15,5 +15,5 @@ export default async function handler(
   console.timeLog("timer", "before response");
   res.status(200).json({ ok: true });
   console.timeLog("timer", "after response");
-  clearTimeout(id);
+  // clearTimeout(id);
 }
