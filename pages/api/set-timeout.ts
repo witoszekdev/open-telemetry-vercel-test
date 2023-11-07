@@ -27,11 +27,11 @@ export default async function handler(
       const handle = setTimeout(async () => {
         await trace
           .getTracer("example-nextjs-app")
-          .startActiveSpan(`timeout:${requestId}`, async () => {
+          .startActiveSpan(`timeout:${requestId}`, async (timeoutSpan) => {
             const timeoutId = handle[Symbol.toPrimitive]();
-            span.setAttribute("timeoutId", timeoutId);
-            span.setAttribute("content", content);
-            span.setAttribute("requestId", requestId);
+            timeoutSpan.setAttribute("timeoutId", timeoutId);
+            timeoutSpan.setAttribute("content", content);
+            timeoutSpan.setAttribute("requestId", requestId);
             console.log("hello from timeout", {
               timeoutId,
               content,
