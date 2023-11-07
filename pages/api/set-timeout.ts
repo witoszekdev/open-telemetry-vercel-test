@@ -2,6 +2,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export const runtime = "nodejs";
 
+const wait = async () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(null);
+    }, 2_000);
+  });
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -14,6 +22,7 @@ export default async function handler(
     console.timeEnd("timer");
   }, 4_000);
   console.timeLog("timer", "before response");
+  wait();
   res.status(200).json({ ok: true });
   console.timeLog("timer", "after response");
   // clearTimeout(id);
