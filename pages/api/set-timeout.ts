@@ -18,7 +18,7 @@ export default async function handler(
     console.timeEnd();
   }, 4_000);
   console.timeLog("before wait");
-  wait();
+  await wait();
   console.timeLog("before response");
   res.status(200).json({ ok: true });
   console.timeLog("after response");
