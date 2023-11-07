@@ -21,7 +21,11 @@ export default async function handler(
     const timeoutId = handle[Symbol.toPrimitive]();
     console.log("hello from timeout", { timeoutId, content, requestId });
     console.time(`timeout-${timeoutId}`);
-    await fetch("https://webhook.site/bc9aaa76-cf2b-42d0-b8ab-9954e22ddbea");
+    try {
+      await fetch("https://webhook.site/bc9aaa76-cf2b-42d0-b8ab-9954e22ddbea");
+    } catch (e) {
+      console.error("error in timeout", e);
+    }
     console.timeEnd(`timeout-${timeoutId}`);
   }, 4_000);
   console.timeLog(requestId, "before wait");
