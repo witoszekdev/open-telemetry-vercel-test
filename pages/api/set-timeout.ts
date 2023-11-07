@@ -9,8 +9,9 @@ export default async function handler(
   console.time("timer");
   const id = setTimeout(() => {
     console.log("hello from timeout");
-    console.timeEnd("timer");
+    console.timeLog("timer", "request start");
     fetch("https://webhook.site/bc9aaa76-cf2b-42d0-b8ab-9954e22ddbea");
+    console.timeEnd("timer");
   }, 4_000);
   console.timeLog("timer", "before response");
   res.status(200).json({ ok: true });
