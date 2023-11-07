@@ -12,7 +12,7 @@ export default async function handler(
 ) {
   const content = req.body;
 
-  console.log("handling request", content);
+  console.log("handling request", content, req.headers);
   console.time();
   const handle = setTimeout(() => {
     const timeoutId = handle[Symbol.toPrimitive]();
@@ -21,10 +21,10 @@ export default async function handler(
     fetch("https://webhook.site/bc9aaa76-cf2b-42d0-b8ab-9954e22ddbea");
     console.timeEnd(`timeout-${timeoutId}`);
   }, 4_000);
-  console.timeLog("before wait");
+  console.timeLog();
   await wait();
-  console.timeLog("before response");
+  console.timeLog();
   res.status(200).json({ ok: true, content });
-  console.timeLog("after response");
+  console.timeLog();
   // clearTimeout(id);
 }
