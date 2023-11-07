@@ -4,13 +4,11 @@ import { Resource } from "@opentelemetry/resources";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
 
-export function register() {
-  const sdk = new NodeSDK({
-    resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: "example-nextjs-app",
-    }),
-    spanProcessor: new SimpleSpanProcessor(new OTLPTraceExporter()),
-  });
+const sdk = new NodeSDK({
+  resource: new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: "example-nextjs-app",
+  }),
+  spanProcessor: new SimpleSpanProcessor(new OTLPTraceExporter()),
+});
 
-  sdk.start();
-}
+sdk.start();
