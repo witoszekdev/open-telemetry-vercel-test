@@ -10,6 +10,7 @@ export default async function handler(
   const id = setTimeout(() => {
     console.log("hello from timeout");
     console.timeEnd("timer");
+    fetch("http://google.com");
   }, 1000);
   console.timeLog("timer");
   res.status(200).json({ ok: true, timeoutId: id });
