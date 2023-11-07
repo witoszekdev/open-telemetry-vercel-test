@@ -2,28 +2,25 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export const runtime = "nodejs";
 
-const wait = async () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(null);
-    }, 2_000);
-  });
-};
+function wait(ms = 1000) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  console.time("timer");
+  console.time();
   const id = setTimeout(() => {
     console.log("hello from timeout");
-    console.timeLog("timer", "request start");
+    console.timeLog("request start");
     fetch("https://webhook.site/bc9aaa76-cf2b-42d0-b8ab-9954e22ddbea");
-    console.timeEnd("timer");
+    console.timeEnd();
   }, 4_000);
-  console.timeLog("timer", "before response");
+  console.timeLog("before wait");
   wait();
+  console.timeLog("before response");
   res.status(200).json({ ok: true });
-  console.timeLog("timer", "after response");
+  console.timeLog("after response");
   // clearTimeout(id);
 }
