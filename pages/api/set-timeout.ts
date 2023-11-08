@@ -12,7 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  return await trace
+  const result = await trace
     .getTracer("example-nextjs-app")
     .startActiveSpan("set-timeout-route", async (span) => {
       const content = req.body;
@@ -58,9 +58,9 @@ export default async function handler(
       console.timeLog(requestId, "before response");
       res.status(200).json({ ok: true, content });
       console.timeLog(requestId, "after response");
-      await spanProcessor.forceFlush();
-      console.timeLog(requestId, "after flush");
       span.end();
       // clearTimeout(id);
     });
+  await spanProcessor.forceFlush();
+  return result;
 }
