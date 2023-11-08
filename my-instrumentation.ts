@@ -15,12 +15,15 @@ export const spanProcessor = new SimpleSpanProcessor(
   }),
 );
 
-export const sdk = new NodeSDK({
-  resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: "example-nextjs-app",
-  }),
-  spanProcessor,
-  instrumentations: [new HttpInstrumentation()],
-});
+export const createSdk = () => {
+  const sdk = new NodeSDK({
+    resource: new Resource({
+      [SemanticResourceAttributes.SERVICE_NAME]: "example-nextjs-app",
+    }),
+    spanProcessor,
+    instrumentations: [new HttpInstrumentation()],
+  });
 
-sdk.start();
+  sdk.start();
+  return sdk;
+};
