@@ -32,6 +32,9 @@ export default async function handler(
       await spanProcessor.forceFlush();
       res.status(200).json({ ok: true, content });
       console.timeLog(requestId, "after response");
+      await wait(1000);
+      await spanProcessor.forceFlush();
+      console.timeLog(requestId, "wait 1000ms + flush");
       // clearTimeout(id);
     });
 }
