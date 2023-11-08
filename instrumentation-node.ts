@@ -6,7 +6,9 @@ import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
 import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 
-export const spanProcessor = new SimpleSpanProcessor(new OTLPTraceExporter());
+export const spanProcessor = new SimpleSpanProcessor(
+  new OTLPTraceExporter({ timeoutMillis: 30_000 }),
+);
 
 export const initialize = () => {
   diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
