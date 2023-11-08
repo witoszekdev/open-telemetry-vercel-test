@@ -1,6 +1,6 @@
 import { trace } from "@opentelemetry/api";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createSdk, spanProcessor } from "../../my-instrumentation";
+import { sdk, spanProcessor } from "../../my-instrumentation";
 
 export const runtime = "nodejs";
 
@@ -12,7 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const sdk = createSdk();
+  sdk.start();
   const span = trace.getTracer("something-else").startSpan("set-timeout-route");
   const content = req.body;
   const requestId =
