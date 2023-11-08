@@ -41,7 +41,7 @@ export default async function handler(
             console.time(`timeout-${timeoutId}`);
             try {
               await fetch(
-                "https://webhook.site/bc9aaa76-cf2b-42d0-b8ab-9954e22ddbea",
+                "https://webhook.site/dd9d8801-ab77-4d89-acb2-0e3c5036862a",
                 {
                   body: JSON.stringify({ requestId, content, timeoutId }),
                   method: "POST",
