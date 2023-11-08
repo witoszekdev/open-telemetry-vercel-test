@@ -6,20 +6,18 @@ import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
 import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 
-export const spanProcessor = new SimpleSpanProcessor(
-  new OTLPTraceExporter({ timeoutMillis: 30_000 }),
-);
-
-export const initialize = () => {
-  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
-  const sdk = new NodeSDK({
-    resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: "example-nextjs-app",
+console.log("running instrumentation");
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
+const sdk = new NodeSDK({
+  resource: new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: "example-nextjs-app",
+  }),
+  spanProcessor: new SimpleSpanProcessor(
+    new OTLPTraceExporter({
+      url: "https://otel.plur.tech/v1/traces",
     }),
-    spanProcessor: spanProcessor,
-    instrumentations: [new HttpInstrumentation()],
-  });
+  ),
+  instrumentations: [new HttpInstrumentation()],
+});
 
-  sdk.start();
-  return sdk;
-};
+sdk.start();
