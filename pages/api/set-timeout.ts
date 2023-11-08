@@ -56,11 +56,10 @@ export default async function handler(
       console.timeLog(requestId, "before wait");
       await wait();
       console.timeLog(requestId, "before response");
+      span.end();
+      await spanProcessor.forceFlush();
       res.status(200).json({ ok: true, content });
       console.timeLog(requestId, "after response");
-      span.end();
       // clearTimeout(id);
     });
-  await spanProcessor.forceFlush();
-  return result;
 }
