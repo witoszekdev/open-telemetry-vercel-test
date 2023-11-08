@@ -1,6 +1,6 @@
 import { trace } from "@opentelemetry/api";
 import { NextApiRequest, NextApiResponse } from "next";
-import { spanProcessor } from "../../utils";
+import { spanProcessor } from "../../instrumentation-node";
 
 export const runtime = "nodejs";
 

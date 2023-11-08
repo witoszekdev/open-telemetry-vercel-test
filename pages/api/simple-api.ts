@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { spanProcessor } from "../../utils";
+import { spanProcessor } from "../../instrumentation-node";
 
 export default async function handler(
   req: NextApiRequest,
