@@ -1,5 +1,6 @@
 import { trace } from "@opentelemetry/api";
 import { NextApiRequest, NextApiResponse } from "next";
+import { spanProcessor } from "../../instrumentation-node";
 
 export const runtime = "nodejs";
 
@@ -57,6 +58,8 @@ export default async function handler(
       console.timeLog(requestId, "before response");
       res.status(200).json({ ok: true, content });
       console.timeLog(requestId, "after response");
+      await spanProcessor.forceFlush();
+      console.timeLog(requestId, "after flush");
       span.end();
       // clearTimeout(id);
     });
