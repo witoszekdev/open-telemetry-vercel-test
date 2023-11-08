@@ -25,34 +25,34 @@ export default async function handler(
 
       console.log("handling request", content, requestId);
       console.time(requestId);
-      const handle = setTimeout(async () => {
-        await trace
-          .getTracer("example-nextjs-app")
-          .startActiveSpan("timeout", async (timeoutSpan) => {
-            const timeoutId = handle[Symbol.toPrimitive]();
-            timeoutSpan.setAttribute("timeoutId", timeoutId);
-            timeoutSpan.setAttribute("content", content);
-            timeoutSpan.setAttribute("requestId", requestId);
-            console.log("hello from timeout", {
-              timeoutId,
-              content,
-              requestId,
-            });
-            console.time(`timeout-${timeoutId}`);
-            try {
-              await fetch(
-                "https://webhook.site/dd9d8801-ab77-4d89-acb2-0e3c5036862a",
-                {
-                  body: JSON.stringify({ requestId, content, timeoutId }),
-                  method: "POST",
-                },
-              );
-            } catch (e) {
-              console.error("error in timeout", e);
-            }
-            console.timeEnd(`timeout-${timeoutId}`);
-          });
-      }, 4_000);
+      // const handle = setTimeout(async () => {
+      //   await trace
+      //     .getTracer("example-nextjs-app")
+      //     .startActiveSpan("timeout", async (timeoutSpan) => {
+      //       const timeoutId = handle[Symbol.toPrimitive]();
+      //       timeoutSpan.setAttribute("timeoutId", timeoutId);
+      //       timeoutSpan.setAttribute("content", content);
+      //       timeoutSpan.setAttribute("requestId", requestId);
+      //       console.log("hello from timeout", {
+      //         timeoutId,
+      //         content,
+      //         requestId,
+      //       });
+      //       console.time(`timeout-${timeoutId}`);
+      //       try {
+      //         await fetch(
+      //           "https://webhook.site/dd9d8801-ab77-4d89-acb2-0e3c5036862a",
+      //           {
+      //             body: JSON.stringify({ requestId, content, timeoutId }),
+      //             method: "POST",
+      //           },
+      //         );
+      //       } catch (e) {
+      //         console.error("error in timeout", e);
+      //       }
+      //       console.timeEnd(`timeout-${timeoutId}`);
+      //     });
+      // }, 4_000);
       console.timeLog(requestId, "before wait");
       await wait();
       console.timeLog(requestId, "before response");
