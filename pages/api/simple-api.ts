@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { spanProcessor } from "../../my-instrumentation";
+import { withOtel } from "../../otel-wrapper";
 
-export default async function handler(
+export default withOtel(async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   const content = req.body;
   await fetch("https://google.com");
-  await spanProcessor.forceFlush();
   res.status(200).json({ ok: true, content });
-}
+});

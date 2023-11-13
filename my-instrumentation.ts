@@ -9,11 +9,7 @@ import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 console.log("running instrumentation");
 
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
-export const spanProcessor = new SimpleSpanProcessor(
-  new OTLPTraceExporter({
-    url: "https://otel.plur.tech/v1/traces",
-  }),
-);
+export const spanProcessor = new SimpleSpanProcessor(new OTLPTraceExporter());
 
 export const sdk = new NodeSDK({
   resource: new Resource({
