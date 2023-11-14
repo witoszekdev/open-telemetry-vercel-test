@@ -44,7 +44,7 @@ export const withOtel = (
         return wrappingTarget.apply(thisArg, args);
       }
 
-      sdk.start();
+      // sdk.start();
       const requestId =
         (req.headers["x-vercel-proxy-signature-ts"] as string) ??
         "<unknown-request-id>";
@@ -71,7 +71,7 @@ export const withOtel = (
           `BEFORE flus spans in batch ${spanProcessor.finishedSpans.length}`,
         );
         await spanProcessor.forceFlush();
-        await sdk.shutdown();
+        // await sdk.shutdown();
 
         originalResEnd.apply(this, args);
       };
@@ -90,7 +90,8 @@ export const withOtel = (
         res.statusMessage = "Internal Server Error";
 
         span.end();
-        await sdk.shutdown();
+        await spanProcessor.forceFlush();
+        // await sdk.shutdown();
 
         // Throw original error
         throw e;

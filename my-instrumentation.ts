@@ -16,3 +16,5 @@ export const sdk = new NodeSDK({
   spanProcessor,
   instrumentations: [new HttpInstrumentation()],
 });
+
+sdk.start();
