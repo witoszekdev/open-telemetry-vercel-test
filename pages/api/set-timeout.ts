@@ -12,7 +12,7 @@ export default withOtel(async function setTimeout(req, res, span) {
     (req.headers["x-vercel-proxy-signature-ts"] as string) ??
     "<unknown-request-id>";
 
-  span.setAttribute("content", content);
+  span?.setAttribute("content", content);
 
   console.log("handling request", content, requestId);
   console.timeLog(requestId, "before wait");
