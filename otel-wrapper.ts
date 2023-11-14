@@ -1,6 +1,8 @@
-import { trace, type Span } from "@opentelemetry/api";
+import { SpanKind, trace, type Span } from "@opentelemetry/api";
+import { SemanticAttributes } from "@opentelemetry/semantic-conventions";
 import { NextApiRequest, NextApiResponse } from "next";
 import { sdk } from "./my-instrumentation";
+import { spanProcessor } from "./utils";
 
 function stripUrlQueryAndFragment(urlPath: string): string {
   return urlPath.split(/[\?#]/, 1)[0];
@@ -49,13 +51,27 @@ export const withOtel = async (handler: NextOtelApiHandler, name?: string) => {
 
         const span = trace
           .getTracer("example-otel-app")
-          .startSpan(`${reqMethod} ${reqPath}`);
+          .startSpan(`${reqMethod} ${reqPath}`, {
+            kind: SpanKind.SERVER,
+            root: true,
+          });
         span.setAttribute("requestId", requestId);
+        span.setAttribute(SemanticAttributes.HTTP_METHOD, reqMethod || "");
+        span.setAttribute(SemanticAttributes.HTTP_TARGET, req.url || "");
+        span.setAttribute(SemanticAttributes.HTTP_ROUTE, req.url || "");
 
         const originalResEnd = res.end;
         // @ts-expect-error - this is a hack to get around Vercel freezing lambda's
         res.end = async function (this: unknown, ...args: unknown[]) {
+          span.setAttribute(
+            SemanticAttributes.HTTP_STATUS_CODE,
+            res.statusCode,
+          );
           span.end();
+          console.log(
+            `BEFORE flus spans in batch ${spanProcessor.finishedSpans.length}`,
+          );
+          await spanProcessor.forceFlush();
           await sdk.shutdown();
 
           originalResEnd.apply(this, args);
