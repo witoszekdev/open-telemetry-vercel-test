@@ -1,6 +1,6 @@
 import { SpanKind, trace, type Span } from "@opentelemetry/api";
 import { SemanticAttributes } from "@opentelemetry/semantic-conventions";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { sdk } from "./my-instrumentation";
 import { spanProcessor } from "./utils";
 
@@ -24,9 +24,12 @@ export type NextOtelApiHandler<T = any> = (
   span: Span | undefined,
 ) => unknown | Promise<unknown>;
 
-export const withOtel = async (handler: NextOtelApiHandler, name?: string) => {
+export const withOtel = (
+  handler: NextOtelApiHandler,
+  name?: string,
+): NextOtelApiHandler => {
   return new Proxy(handler, {
-    apply: (
+    apply: async (
       wrappingTarget,
       thisArg,
       args: [NextApiRequest | undefined, NextApiResponse | undefined],
@@ -41,64 +44,57 @@ export const withOtel = async (handler: NextOtelApiHandler, name?: string) => {
         return wrappingTarget.apply(thisArg, args);
       }
 
-      const boundHandler = async () => {
-        sdk.start();
-        const requestId =
-          (req.headers["x-vercel-proxy-signature-ts"] as string) ??
-          "<unknown-request-id>";
-        const reqPath = name ?? getReqPath(req);
-        const reqMethod = `${(req.method || "GET").toUpperCase()} `;
+      sdk.start();
+      const requestId =
+        (req.headers["x-vercel-proxy-signature-ts"] as string) ??
+        "<unknown-request-id>";
+      const reqPath = name ?? getReqPath(req);
+      const reqMethod = `${(req.method || "GET").toUpperCase()} `;
 
-        const span = trace
-          .getTracer("example-otel-app")
-          .startSpan(`${reqMethod} ${reqPath}`, {
-            kind: SpanKind.SERVER,
-            root: true,
-          });
-        span.setAttribute("requestId", requestId);
-        span.setAttribute(SemanticAttributes.HTTP_METHOD, reqMethod || "");
-        span.setAttribute(SemanticAttributes.HTTP_TARGET, req.url || "");
-        span.setAttribute(SemanticAttributes.HTTP_ROUTE, req.url || "");
+      const span = trace
+        .getTracer("example-otel-app")
+        .startSpan(`${reqMethod} ${reqPath}`, {
+          kind: SpanKind.SERVER,
+          root: true,
+        });
+      span.setAttribute("requestId", requestId);
+      span.setAttribute(SemanticAttributes.HTTP_METHOD, reqMethod || "");
+      span.setAttribute(SemanticAttributes.HTTP_TARGET, req.url || "");
+      span.setAttribute(SemanticAttributes.HTTP_ROUTE, req.url || "");
 
-        const originalResEnd = res.end;
-        // @ts-expect-error - this is a hack to get around Vercel freezing lambda's
-        res.end = async function (this: unknown, ...args: unknown[]) {
-          span.setAttribute(
-            SemanticAttributes.HTTP_STATUS_CODE,
-            res.statusCode,
-          );
-          span.end();
-          console.log(
-            `BEFORE flus spans in batch ${spanProcessor.finishedSpans.length}`,
-          );
-          await spanProcessor.forceFlush();
-          await sdk.shutdown();
+      const originalResEnd = res.end;
+      // @ts-expect-error - this is a hack to get around Vercel freezing lambda's
+      res.end = async function (this: unknown, ...args: unknown[]) {
+        span.setAttribute(SemanticAttributes.HTTP_STATUS_CODE, res.statusCode);
+        span.end();
+        console.log(
+          `BEFORE flus spans in batch ${spanProcessor.finishedSpans.length}`,
+        );
+        await spanProcessor.forceFlush();
+        await sdk.shutdown();
 
-          originalResEnd.apply(this, args);
-        };
-
-        try {
-          const handlerResult = await wrappingTarget.apply(thisArg, [
-            ...args,
-            span,
-          ]);
-          return handlerResult;
-        } catch (e) {
-          // TODO: Do something with error
-
-          // Error won't be passed onto next.js, it didn't have time to set the status code and status message yet
-          res.statusCode = 500;
-          res.statusMessage = "Internal Server Error";
-
-          span.end();
-          await sdk.shutdown();
-
-          // Throw original error
-          throw e;
-        }
+        originalResEnd.apply(this, args);
       };
 
-      return boundHandler;
+      try {
+        const handlerResult = await wrappingTarget.apply(thisArg, [
+          ...args,
+          span,
+        ]);
+        return handlerResult;
+      } catch (e) {
+        // TODO: Do something with error
+
+        // Error won't be passed onto next.js, it didn't have time to set the status code and status message yet
+        res.statusCode = 500;
+        res.statusMessage = "Internal Server Error";
+
+        span.end();
+        await sdk.shutdown();
+
+        // Throw original error
+        throw e;
+      }
     },
   });
 };
