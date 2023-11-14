@@ -57,9 +57,13 @@ export const withOtel = (
           kind: SpanKind.SERVER,
           root: true,
         });
+      console.log(`${reqMethod} ${reqPath}`);
       span.setAttribute("requestId", requestId);
       span.setAttribute(SemanticAttributes.HTTP_METHOD, reqMethod || "");
       span.setAttribute(SemanticAttributes.HTTP_TARGET, req.url || "");
+      // TODO: Pathname to API endpoint
+      // /pages/api/set-timeout
+      // /pages/api/trpc/[trpc]
       span.setAttribute(SemanticAttributes.HTTP_ROUTE, req.url || "");
 
       const originalResEnd = res.end;
