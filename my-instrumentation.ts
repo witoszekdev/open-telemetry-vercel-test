@@ -7,7 +7,7 @@ import { spanProcessor } from "./utils";
 
 console.log("running instrumentation");
 
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
+// diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
 export const sdk = new NodeSDK({
   resource: new Resource({
