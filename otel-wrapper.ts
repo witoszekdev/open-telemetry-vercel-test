@@ -1,7 +1,7 @@
 import { SpanKind, trace, type Span } from "@opentelemetry/api";
 import { SemanticAttributes } from "@opentelemetry/semantic-conventions";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import { sdk } from "./my-instrumentation";
+import "./my-instrumentation";
 import { spanProcessor } from "./utils";
 
 function stripUrlQueryAndFragment(urlPath: string): string {
