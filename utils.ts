@@ -4,7 +4,8 @@ import {
 } from "@opentelemetry/sdk-trace-node";
 import { Span, Context } from "@opentelemetry/api";
 import { ReadableSpan } from "@opentelemetry/sdk-trace-base";
-// import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
+import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 
 // Debug span processor
 export class CustomBatchSpanProcessor extends BatchSpanProcessor {
@@ -42,9 +43,9 @@ export class CustomBatchSpanProcessorBis implements SpanProcessor {
   }
 }
 
-export const spanProcessor = new CustomBatchSpanProcessorBis();
-// export const spanProcessor = new SimpleSpanProcessor(
-//   new OTLPTraceExporter({
-//     url: "https://otel.plur.tech/v1/traces",
-//   }),
-// );
+// export const spanProcessor = new CustomBatchSpanProcessorBis();
+export const spanProcessor = new SimpleSpanProcessor(
+  new OTLPTraceExporter({
+    url: "https://otel-collector.witoszek.dev/v1/traces",
+  }),
+);

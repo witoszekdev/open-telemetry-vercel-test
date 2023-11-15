@@ -74,9 +74,9 @@ export const withOtel = (
               res.statusCode,
             );
             span.end();
-            console.log(
-              `BEFORE flus spans in batch ${spanProcessor.finishedSpans.length}`,
-            );
+            // console.log(
+            //   `BEFORE flus spans in batch ${spanProcessor.finishedSpans.length}`,
+            // );
             await spanProcessor.forceFlush();
             // await sdk.shutdown();
 
