@@ -8,4 +8,4 @@ export default withOtel(async function handler(
   const content = req.body;
   await fetch("https://google.com");
   res.status(200).json({ ok: true, content });
-});
+}, "/api/simple-api");

@@ -23,4 +23,4 @@ export default withOtel(async function setTimeout(req, res, span) {
   childSpan.end();
   res.status(200).json({ ok: true, content });
   console.timeLog(requestId, "after response");
-});
+}, "/api/set-timeout");
